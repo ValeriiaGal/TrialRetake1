@@ -1,0 +1,6 @@
+@TrialRetake1_HostAddress = http://localhost:5086
+
+GET {{TrialRetake1_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
