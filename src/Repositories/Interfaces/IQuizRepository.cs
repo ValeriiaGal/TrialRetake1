@@ -8,5 +8,4 @@ public interface IQuizRepository
 {
     public Task<IEnumerable<Quiz>> GetAllQuizesAsync();
     public Task<Quiz> GetQuizByIdAsync(int id);
-    public Task<int> CreateQuizAsync(Quiz quiz);
 }

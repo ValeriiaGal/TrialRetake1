@@ -10,7 +10,7 @@ var connStr = builder.Configuration.GetConnectionString("DefaultConnection")
               ?? throw new InvalidOperationException("DefaultConnection connection string configuration is missing.");
 
 
-builder.Services.AddTransient<IPotatoTeacherRepository, PotatoTeacherRepository>();
+builder.Services.AddTransient<IPotatoTeacherRepository, PotatoTeacherRepository>(_ => new PotatoTeacherRepository(connStr!));
 builder.Services.AddTransient<IQuizRepository, QuizRepository>(_ => new QuizRepository(connStr!));
 builder.Services.AddTransient<IQuizTeacherRepository, QuizTeacherRepository>(_ => new QuizTeacherRepository(connStr!));
 builder.Services.AddTransient<IPotatoTeacherService, PotatoTeacherService>();

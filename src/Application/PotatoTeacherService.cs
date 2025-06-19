@@ -10,7 +10,8 @@ namespace Services;
 
 public class PotatoTeacherService(
     IPotatoTeacherRepository pTRepository,
-    IQuizRepository quizRepository
+    IQuizRepository quizRepository,
+    IQuizTeacherRepository quizTeacherRepository
 ) : IPotatoTeacherService
 {
     public async Task<List<TestDTO>> GetAllTestsAsync()
@@ -44,23 +45,13 @@ public class PotatoTeacherService(
         int teacherId;
         if (teacher == null)
         {
-            teacherId = await pTRepository.CreateNewTeacherByNameAsync(test.PotatoTeacherName);
+            teacherId = await quizTeacherRepository.CreateQuizTeacherAsync(-1, test);
         }
         else
         {
-            teacherId = teacher.Id;
+            teacherId = await quizTeacherRepository.CreateQuizTeacherAsync(teacher.Id, test);
         }
 
-
-        var quiz = new Quiz
-        {
-            Name = test.Name,
-            PathFile = test.Path,
-            PotatoTeacherId = teacherId
-        };
-        var query = await quizRepository.CreateQuizAsync(quiz);
-
-
-        return query;
+        return teacherId;
     }
 }
