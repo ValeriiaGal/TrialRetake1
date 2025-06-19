@@ -8,7 +8,7 @@
 
 # User-specific files
 *.idea
-application.*
+appsettings.*
 *.rsuser
 *.suo
 *.user
