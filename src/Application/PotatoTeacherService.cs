@@ -10,8 +10,7 @@ namespace Services;
 
 public class PotatoTeacherService(
     IPotatoTeacherRepository pTRepository,
-    IQuizRepository quizRepository,
-    string _connectionStering
+    IQuizRepository quizRepository
 ) : IPotatoTeacherService
 {
     public async Task<List<TestDTO>> GetAllTestsAsync()
@@ -40,45 +39,28 @@ public class PotatoTeacherService(
 
     public async Task<int> CreateTestAsync(CreateDTO test)
     {
-        await using (SqlConnection conn = new SqlConnection(_connectionStering))
+        var teacher = await pTRepository.GetTeacherByNameAsync(test.PotatoTeacherName);
+
+        int teacherId;
+        if (teacher == null)
         {
-            await conn.OpenAsync();
-
-            await using (var transaction = conn.BeginTransaction())
-            {
-                try
-                {
-                    var teacher = await pTRepository.GetTeacherByNameAsync(test.PotatoTeacherName, conn, transaction);
-                    
-                    int teacherId;
-                    if (teacher == null)
-                    {
-                        teacherId = await pTRepository.CreateNewTeacherByNameAsync(test.PotatoTeacherName, conn, transaction);
-                    }
-                    else
-                    {
-                        teacherId = teacher.Id;
-                    }
-
-
-                    var quiz = new Quiz
-                    {
-                        Name = test.Name,
-                        PathFile = test.Path,
-                        PotatoTeacherId = teacherId
-                    };
-                    var query = await quizRepository.CreateQuizAsync(quiz, conn, transaction);
-                    
-                    transaction.Commit();
-                    
-                    return query;
-                }
-                catch (SqlException ex)
-                {
-                    transaction.Rollback();
-                    throw new ServerConnectionException("Baza upala :)");
-                }
-            }
+            teacherId = await pTRepository.CreateNewTeacherByNameAsync(test.PotatoTeacherName);
         }
+        else
+        {
+            teacherId = teacher.Id;
+        }
+
+
+        var quiz = new Quiz
+        {
+            Name = test.Name,
+            PathFile = test.Path,
+            PotatoTeacherId = teacherId
+        };
+        var query = await quizRepository.CreateQuizAsync(quiz);
+
+
+        return query;
     }
 }

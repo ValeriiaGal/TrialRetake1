@@ -6,15 +6,14 @@ using Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+var connStr = builder.Configuration.GetConnectionString("DefaultConnection") 
+              ?? throw new InvalidOperationException("DefaultConnection connection string configuration is missing.");
+
 
 builder.Services.AddTransient<IPotatoTeacherRepository, PotatoTeacherRepository>();
-builder.Services.AddTransient<IQuizRepository>(_ => new QuizRepository(connStr!));
-builder.Services.AddTransient<IPotatoTeacherService>(_ => new PotatoTeacherService(
-    new PotatoTeacherRepository(),
-    new QuizRepository(connStr!),
-    connStr!
-    ));
+builder.Services.AddTransient<IQuizRepository, QuizRepository>(_ => new QuizRepository(connStr!));
+builder.Services.AddTransient<IQuizTeacherRepository, QuizTeacherRepository>(_ => new QuizTeacherRepository(connStr!));
+builder.Services.AddTransient<IPotatoTeacherService, PotatoTeacherService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

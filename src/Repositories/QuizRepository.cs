@@ -49,8 +49,7 @@ public class QuizRepository(string connectionString) : IQuizRepository
         var sql = @"SELECT * FROM Quiz q JOIN PotatoTeacher pt ON q.PotatoTeacherId = pt.id WHERE q.id = @id";
 
         var result = new Quiz();
-        try
-        {
+        
             await using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 await conn.OpenAsync();
@@ -80,21 +79,16 @@ public class QuizRepository(string connectionString) : IQuizRepository
             }
 
             return result;
-        }
-        catch (NullReferenceException ex)
-        {
-            throw new NotFoundException("Quiz does not exist");
-        }
+        
+
     }
 
-    public async Task<int> CreateQuizAsync(Quiz quiz, SqlConnection connection, SqlTransaction transaction)
+    public async Task<int> CreateQuizAsync(Quiz quiz)
     {
         var sql =
             @"INSERT INTO Quiz (Name, PotatoTeacherId, PathFile) OUTPUT INSERTED.Id VALUES (@Name, @PotatoTeacherId, @PathFile);";
 
-        try
-        {
-            await using (SqlCommand cmd = new SqlCommand(sql, connection, transaction))
+            await using (SqlCommand cmd = new SqlCommand(sql))
             {
                 cmd.Parameters.AddWithValue("@Name", quiz.Name);
                 cmd.Parameters.AddWithValue("@PotatoTeacherId", quiz.PotatoTeacherId);
@@ -102,10 +96,5 @@ public class QuizRepository(string connectionString) : IQuizRepository
 
                 return (int)await cmd.ExecuteScalarAsync();
             }
-        }
-        catch (SqlException ex)
-        {
-            throw new ServerConnectionException("Object creationg exception");
-        }
     }
 }
