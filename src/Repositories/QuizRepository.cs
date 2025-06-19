@@ -6,7 +6,7 @@ using Repositories.Interfaces;
 
 namespace Repositories;
 
-public class QuizRepository(string _connectionString) : IQuizRepository
+public class QuizRepository(string connectionString) : IQuizRepository
 {
     public async Task<IEnumerable<Quiz>> GetAllQuizesAsync()
     {
@@ -16,7 +16,7 @@ public class QuizRepository(string _connectionString) : IQuizRepository
 
         try
         {
-            await using (SqlConnection conn = new SqlConnection(_connectionString))
+            await using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 await conn.OpenAsync();
 
@@ -51,7 +51,7 @@ public class QuizRepository(string _connectionString) : IQuizRepository
         var result = new Quiz();
         try
         {
-            await using (SqlConnection conn = new SqlConnection(_connectionString))
+            await using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 await conn.OpenAsync();
 
